@@ -1,23 +1,24 @@
 import { Routes } from '@angular/router';
+import { MainLayoutComponent } from './layout/main-layout.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'projects', pathMatch: 'full' },
   {
-    path: 'projects',
-    loadChildren: () => import('./projects/projects.routes').then(m => m.PROJECTS_ROUTES)
-  },
-  {
-    path: 'trackings',
-    loadChildren: () => import('./tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
-  },
- /*  {
-    path: 'reports',
-    loadChildren: () => import('./reports/reports.routes').then(m => m.REPORTS_ROUTES)
-  }, */
-  {
-    path: 'recipients',
-    loadChildren: () => import('./recipients/recipients.module')
-      .then(m => m.RecipientsModule)
-  },
-  { path: '**', redirectTo: 'projects' }
+    path: '',
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'tracking',
+        loadChildren: () => import('./tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+      }
+    ]
+  }
 ];

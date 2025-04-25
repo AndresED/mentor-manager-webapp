@@ -145,4 +145,12 @@ export class TrackingService {
     
     return of(mockTrackings);
   }
+
+  getDashboardStats() {
+    return this.http.get<any>(`${this.apiUrl}/dashboard/stats`);
+  }
+
+  getUpcomingTrackings() {
+    return this.http.get<any>(`${this.apiUrl}/dashboard/upcoming`);
+  }
 } 

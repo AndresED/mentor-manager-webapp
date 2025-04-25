@@ -10,6 +10,10 @@ const routes: Routes = [
   {
     path: 'trackings',
     loadChildren: () => import('./tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
   }
 ];
 

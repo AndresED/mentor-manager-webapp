@@ -19,6 +19,10 @@ const routes: Routes = [
   {
     path: 'trackings',
     loadChildren: () => import('./app/tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./app/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
   }
 ];
 

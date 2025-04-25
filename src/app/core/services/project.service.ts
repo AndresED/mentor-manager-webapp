@@ -154,4 +154,12 @@ export class ProjectService {
     this.projectsSubject.next(mockProjects);
     return of(mockProjects);
   }
+
+  getProjectsStatus() {
+    return this.http.get<any>(`${this.apiUrl}/projects/status`);
+  }
+
+  getRecentActivity() {
+    return this.http.get<any>(`${this.apiUrl}/projects/activity`);
+  }
 } 
