@@ -9,99 +9,67 @@ import { ProjectService, Project } from '../../../core/services/project.service'
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <div class="container mx-auto p-4">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">Proyectos</h1>
-        <div>
-          <button 
-            class="bg-blue-500 text-white px-4 py-2 rounded"
-            (click)="createProject()">
-            Nuevo Proyecto
-          </button>
-        </div>
-      </div>
-      
-      <!-- Filtros -->
-      <div class="mb-4 flex flex-wrap gap-2">
-        <button 
-          *ngFor="let filter of filters"
-          class="px-4 py-2 rounded-full border"
-          [ngClass]="{'bg-blue-500 text-white': currentFilter === filter.value, 'bg-white': currentFilter !== filter.value}"
-          (click)="filterProjects(filter.value)">
-          {{filter.label}}
+    <div class="max-w-7xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-100">Proyectos</h1>
+        <button routerLink="/projects/new" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+          Nuevo Proyecto
         </button>
       </div>
-      
-      <!-- Cargando -->
-      <div *ngIf="loading" class="text-center py-8">
-        <p class="text-gray-500">Cargando proyectos...</p>
+
+      <div class="flex gap-2 mb-6">
+        <button 
+          *ngFor="let filter of filters"
+          (click)="filterProjects(filter)"
+          [class.bg-blue-600]="currentFilter === filter"
+          class="px-4 py-2 rounded-full text-gray-100 hover:bg-[#1B2438] transition-colors"
+          [class.bg-[#131B2C]]="currentFilter !== filter">
+          {{ filter }}
+        </button>
       </div>
-      
-      <!-- Lista de proyectos -->
-      <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div 
-          *ngFor="let project of filteredProjects" 
-          class="bg-white shadow rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-          (click)="viewProjectDetail(project._id)">
-          <h2 class="text-xl font-semibold">{{project.name}}</h2>
-          <p class="text-gray-600 mt-2">{{project.description}}</p>
-          <div class="flex justify-between items-center mt-4">
-            <span class="text-sm text-gray-500">{{project.assignedDeveloper}}</span>
-            <span class="px-2 py-1 text-xs rounded-full" 
-              [ngClass]="{
-                'bg-green-100 text-green-800': project.status === 'Activo',
-                'bg-yellow-100 text-yellow-800': project.status === 'Parado',
-                'bg-blue-100 text-blue-800': project.status === 'Soporte',
-                'bg-gray-100 text-gray-800': project.status === 'Finalizado'
-              }">
-              {{project.status}}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div *ngFor="let project of filteredProjects" 
+             (click)="navigateToDetail(project._id)"
+             class="bg-[#131B2C] p-6 rounded-lg border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+          <h3 class="text-xl font-semibold text-gray-100 mb-2">{{ project.name }}</h3>
+          <p class="text-gray-300 mb-4">{{ project.description }}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-300">{{ project.assignedDeveloper }}</span>
+            <span [class]="getStatusClass(project.status)"
+                  class="px-3 py-1 rounded-full text-sm">
+              {{ project.status }}
             </span>
           </div>
         </div>
       </div>
-      
-      <!-- Paginación -->
-      <div *ngIf="!loading && totalPages > 1" class="flex justify-center mt-4">
-        <nav>
-          <ul class="flex">
-            <li *ngFor="let page of getPages()" class="mx-1">
-              <button 
-                class="px-3 py-1 rounded"
-                [ngClass]="{
-                  'bg-blue-500 text-white': page === currentPage,
-                  'bg-gray-200 text-gray-700': page !== currentPage
-                }"
-                (click)="changePage(page)">
-                {{page}}
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      
-      <!-- Mensaje cuando no hay proyectos -->
-      <div *ngIf="!loading && filteredProjects.length === 0" class="text-center py-8">
-        <p class="text-gray-500">No hay proyectos que mostrar</p>
-      </div>
     </div>
   `,
-  styles: []
+  styles: [`
+    .status-active {
+      @apply bg-green-900 text-green-300;
+    }
+    .status-paused {
+      @apply bg-yellow-900 text-yellow-300;
+    }
+    .status-support {
+      @apply bg-blue-900 text-blue-300;
+    }
+    .status-finished {
+      @apply bg-gray-900 text-gray-300;
+    }
+  `]
 })
 export class ProjectListComponent implements OnInit {
   projects: Project[] = [];
   filteredProjects: Project[] = [];
-  currentFilter: string = 'all';
+  currentFilter: string = 'Todos';
   loading = true;
   currentPage = 1;
   itemsPerPage = 12;
   
-  filters = [
-    { label: 'Todos', value: 'all' },
-    { label: 'Activo', value: 'Activo' },
-    { label: 'Parado', value: 'Parado' },
-    { label: 'Soporte', value: 'Soporte' },
-    { label: 'Finalizado', value: 'Finalizado' }
-  ];
+  filters = ['Todos', 'Activo', 'Parado', 'Soporte', 'Finalizado'];
 
   constructor(
     private readonly projectService: ProjectService,
@@ -127,13 +95,13 @@ export class ProjectListComponent implements OnInit {
     });
   }
 
-  filterProjects(status: string): void {
-    this.currentFilter = status;
+  filterProjects(filter: string): void {
+    this.currentFilter = filter;
     
-    if (status === 'all') {
+    if (filter === 'Todos') {
       this.filteredProjects = this.projects;
     } else {
-      this.filteredProjects = this.projects.filter(project => project.status === status);
+      this.filteredProjects = this.projects.filter(project => project.status === filter);
     }
   }
 
@@ -155,7 +123,7 @@ export class ProjectListComponent implements OnInit {
     this.currentPage = page;
   }
 
-  viewProjectDetail(id: string | undefined): void {
+  navigateToDetail(id: string | undefined): void {
     console.log('Navegando al detalle del proyecto:', id);
     if (id) {
       this.router.navigate(['/projects', id]);
@@ -166,5 +134,15 @@ export class ProjectListComponent implements OnInit {
 
   createProject(): void {
     this.router.navigate(['/projects/new']);
+  }
+
+  getStatusClass(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'Activo': 'status-active',
+      'Parado': 'status-paused',
+      'Soporte': 'status-support',
+      'Finalizado': 'status-finished'
+    };
+    return statusMap[status] || '';
   }
 } 
