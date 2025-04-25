@@ -1,134 +1,52 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-interface Recipient {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { FormsModule } from '@angular/forms';
+import { RecipientModalComponent } from '../recipient-modal/recipient-modal.component';
+import { ProjectService } from '../../../core/services/project.service';
+import { RecipientService } from '../../../core/services/recipient.service';
+import { Recipient } from '../../../core/models/recipient.model';
 
 @Component({
   selector: 'app-recipient-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, RecipientModalComponent],
   template: `
     <div class="container mx-auto p-4">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">Destinatarios de Reportes</h1>
-        <button 
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-          (click)="showAddForm = !showAddForm">
-          {{showAddForm ? 'Cancelar' : 'Añadir Destinatario'}}
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-white">Destinatarios de Reportes</h1>
+        <button (click)="showModal = true" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+          Añadir Destinatario
         </button>
       </div>
-      
-      <!-- Formulario para añadir destinatario -->
-      <div *ngIf="showAddForm" class="bg-white shadow rounded-lg p-4 mb-4">
-        <h2 class="text-lg font-semibold mb-4">Nuevo Destinatario</h2>
-        <form [formGroup]="recipientForm" (ngSubmit)="onSubmit()">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                Nombre
-              </label>
-              <input 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="name"
-                type="text"
-                formControlName="name"
-                placeholder="Nombre completo">
-              <div *ngIf="recipientForm.get('name')?.hasError('required') && recipientForm.get('name')?.touched" class="text-red-500 text-xs mt-1">
-                El nombre es obligatorio
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                Correo Electrónico
-              </label>
-              <input 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="email"
-                type="email"
-                formControlName="email"
-                placeholder="correo@ejemplo.com">
-              <div *ngIf="recipientForm.get('email')?.hasError('required') && recipientForm.get('email')?.touched" class="text-red-500 text-xs mt-1">
-                El correo es obligatorio
-              </div>
-              <div *ngIf="recipientForm.get('email')?.hasError('email') && recipientForm.get('email')?.touched" class="text-red-500 text-xs mt-1">
-                El formato del correo no es válido
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
-                Rol
-              </label>
-              <select 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="role"
-                formControlName="role">
-                <option value="Cliente">Cliente</option>
-                <option value="Gerente">Gerente</option>
-                <option value="Desarrollador">Desarrollador</option>
-                <option value="Otro">Otro</option>
-              </select>
-              <div *ngIf="recipientForm.get('role')?.hasError('required') && recipientForm.get('role')?.touched" class="text-red-500 text-xs mt-1">
-                El rol es obligatorio
-              </div>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-4">
-            <button 
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-              [disabled]="!recipientForm.valid">
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-      
-      <!-- Lista de destinatarios -->
-      <div class="bg-white shadow rounded-lg p-4">
-        <h2 class="text-lg font-semibold mb-4">Destinatarios Registrados</h2>
+
+      <!-- Table Container -->
+      <div class="bg-[#131B2C] rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Destinatarios Registrados</h2>
         
+        <!-- Table -->
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-white">
+          <table class="w-full">
             <thead>
-              <tr>
-                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Nombre
-                </th>
-                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Correo Electrónico
-                </th>
-                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Rol
-                </th>
-                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Acciones
-                </th>
+              <tr class="text-gray-400 border-b border-gray-700">
+                <th class="text-left py-3 px-4">NOMBRE</th>
+                <th class="text-left py-3 px-4">CORREO ELECTRÓNICO</th>
+                <th class="text-left py-3 px-4">PROYECTO</th>
+                <th class="text-left py-3 px-4">ROL</th>
+                <th class="text-right py-3 px-4">ACCIONES</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let recipient of recipients">
-                <td class="py-2 px-4 border-b border-gray-200">
-                  {{recipient.name}}
-                </td>
-                <td class="py-2 px-4 border-b border-gray-200">
-                  {{recipient.email}}
-                </td>
-                <td class="py-2 px-4 border-b border-gray-200">
-                  {{recipient.role}}
-                </td>
-                <td class="py-2 px-4 border-b border-gray-200">
-                  <button 
-                    class="text-red-500 hover:text-red-700"
-                    (click)="deleteRecipient(recipient.id)">
+              <tr *ngFor="let recipient of recipients" 
+                  class="border-b border-gray-700 text-white hover:bg-[#1B2438]">
+                <td class="py-3 px-4">{{recipient.name}}</td>
+                <td class="py-3 px-4">{{recipient.email}}</td>
+                <td class="py-3 px-4">{{getProjectNames(recipient.projects)}}</td>
+                <td class="py-3 px-4">{{recipient.role}}</td>
+                <td class="py-3 px-4 text-right">
+                  <button (click)="deleteRecipient(recipient._id)" 
+                          class="text-red-500 hover:text-red-600">
                     Eliminar
                   </button>
                 </td>
@@ -136,80 +54,76 @@ interface Recipient {
             </tbody>
           </table>
         </div>
-        
-        <!-- Mensaje cuando no hay destinatarios -->
-        <div *ngIf="recipients.length === 0" class="text-center py-8">
-          <p class="text-gray-500">No hay destinatarios registrados</p>
-        </div>
       </div>
+
+      <!-- Modal -->
+      <app-recipient-modal 
+        *ngIf="showModal"
+        (close)="showModal = false"
+        (save)="addRecipient($event)">
+      </app-recipient-modal>
     </div>
   `,
   styles: []
 })
 export class RecipientListComponent implements OnInit {
-  showAddForm = false;
-  recipientForm: FormGroup;
-  recipients: Recipient[] = [
-    {
-      id: '1',
-      name: 'Juan Pérez',
-      email: 'juan.perez@ejemplo.com',
-      role: 'Cliente'
-    },
-    {
-      id: '2',
-      name: 'María López',
-      email: 'maria.lopez@ejemplo.com',
-      role: 'Gerente'
-    },
-    {
-      id: '3',
-      name: 'Carlos Rodríguez',
-      email: 'carlos.rodriguez@ejemplo.com',
-      role: 'Desarrollador'
-    }
-  ];
+  recipients: Recipient[] = [];
+  projects: any[] = [];
+  showModal = false;
 
-  constructor(private fb: FormBuilder) {
-    this.recipientForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      role: ['Cliente', Validators.required]
+  constructor(
+    private recipientService: RecipientService,
+    private projectService: ProjectService
+  ) {}
+
+  ngOnInit() {
+    this.loadProjects();
+    this.loadRecipients();
+  }
+
+  loadProjects() {
+    this.projectService.getProjects().subscribe(
+      projects => this.projects = projects
+    );
+  }
+
+  loadRecipients() {
+    this.recipientService.getRecipients().subscribe(
+      recipients => this.recipients = recipients
+    );
+  }
+
+  getProjectNames(projectIds: string[]): string {
+    if (!projectIds?.length) return 'N/A';
+    return projectIds
+      .map(id => {
+        const project = this.projects.find(p => p._id === id);
+        return project ? project.name : '';
+      })
+      .filter(name => name)
+      .join(', ');
+  }
+
+  addRecipient(recipient: Recipient) {
+    this.recipientService.createRecipient(recipient).subscribe({
+      next: (newRecipient) => {
+        this.recipients.push(newRecipient);
+        this.showModal = false;
+      },
+      error: (error) => console.error('Error creating recipient:', error)
     });
   }
 
-  ngOnInit(): void {}
-  
-  onSubmit(): void {
-    if (this.recipientForm.valid) {
-      const newRecipient: Recipient = {
-        id: Date.now().toString(), // Generar un ID único
-        ...this.recipientForm.value
-      };
-      
-      console.log('Nuevo destinatario:', newRecipient);
-      // Aquí iría la lógica para guardar en el backend
-      
-      // Añadir a la lista local
-      this.recipients.push(newRecipient);
-      
-      // Resetear el formulario
-      this.recipientForm.reset({
-        role: 'Cliente'
-      });
-      
-      // Ocultar el formulario
-      this.showAddForm = false;
-    }
-  }
-  
-  deleteRecipient(id: string): void {
+  deleteRecipient(id: string | undefined): void {
+    if (!id) return;
+    
     if (confirm('¿Estás seguro de que deseas eliminar este destinatario?')) {
-      console.log('Eliminando destinatario:', id);
-      // Aquí iría la lógica para eliminar en el backend
-      
-      // Eliminar de la lista local
-      this.recipients = this.recipients.filter(r => r.id !== id);
+      this.recipientService.deleteRecipient(id).subscribe({
+        next: () => {
+          this.recipients = this.recipients.filter(r => r._id !== id);
+        },
+        error: (error) => console.error('Error deleting recipient:', error)
+      });
     }
   }
 } 

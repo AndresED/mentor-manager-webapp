@@ -11,7 +11,7 @@ import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.bubble.css';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/projects', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {
     path: 'projects',
     loadChildren: () => import('./app/projects/projects.routes').then(m => m.PROJECTS_ROUTES)
@@ -23,6 +23,10 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./app/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
+  },
+  {
+    path: 'recipients',
+    loadChildren: () => import('./app/recipients/recipients.routes').then(m => m.RECIPIENTS_ROUTES)
   }
 ];
 

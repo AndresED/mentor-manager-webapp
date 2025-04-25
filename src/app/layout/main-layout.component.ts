@@ -16,15 +16,29 @@ import { RouterModule } from '@angular/router';
           <a routerLink="/dashboard" 
              routerLinkActive="bg-blue-600"
              class="flex items-center text-gray-300 hover:bg-[#1B2438] p-2 rounded-lg">
-            <span class="material-icons mr-2">dashboard</span>
+            <i class="fas fa-home mr-3"></i>
             Dashboard
           </a>
           
           <a routerLink="/projects" 
              routerLinkActive="bg-blue-600"
              class="flex items-center text-gray-300 hover:bg-[#1B2438] p-2 rounded-lg">
-            <span class="material-icons mr-2">folder</span>
+            <i class="fas fa-project-diagram mr-3"></i>
             Projects
+          </a>
+          
+          <a routerLink="/tracking" 
+             routerLinkActive="bg-blue-600"
+             class="flex items-center text-gray-300 hover:bg-[#1B2438] p-2 rounded-lg">
+            <span class="material-icons mr-2">track_changes</span>
+            Tracking
+          </a>
+
+          <a routerLink="/recipients" 
+             routerLinkActive="bg-blue-600"
+             class="flex items-center text-gray-300 hover:bg-[#1B2438] p-2 rounded-lg">
+            <i class="fas fa-users mr-3"></i>
+            Recipients
           </a>
           
           <a routerLink="/reports" 

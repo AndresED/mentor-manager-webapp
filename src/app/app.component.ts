@@ -14,20 +14,6 @@ import { RouterModule } from '@angular/router';
           <span class="text-2xl font-bold text-white">Dashdark X</span>
         </div>
 
-        <!-- Search -->
-        <div class="mb-6">
-          <div class="relative">
-            <input 
-              type="text" 
-              placeholder="Search for..." 
-              class="w-full bg-[#131B2C] text-gray-100 rounded-lg py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-            <span class="absolute left-3 top-2.5 text-gray-400">
-              <i class="fas fa-search"></i>
-            </span>
-          </div>
-        </div>
-
         <!-- Navigation -->
         <nav class="space-y-2">
           <a routerLink="/dashboard" 
@@ -42,13 +28,12 @@ import { RouterModule } from '@angular/router';
             <i class="fas fa-project-diagram mr-3"></i>
             <span>Projects</span>
           </a>
-          <a routerLink="/reports" 
-             routerLinkActive="bg-[#131B2C] text-blue-400" 
+          <a routerLink="/recipients" 
+             routerLinkActive="bg-blue-600"
              class="flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
-            <i class="fas fa-chart-bar mr-3"></i>
-            <span>Reports</span>
+            <i class="fas fa-users mr-3"></i>
+            Recipients
           </a>
-          
         </nav>
       </aside>
 
