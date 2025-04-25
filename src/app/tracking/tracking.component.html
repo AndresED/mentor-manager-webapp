@@ -1,0 +1,55 @@
+<div class="tracking-container">
+  <h2>Seguimientos</h2>
+  
+  <div class="tracking-list">
+    <div *ngFor="let tracking of trackings" class="tracking-card">
+      <div class="tracking-header">
+        <h3>Seguimiento: {{tracking.developer}}</h3>
+        <span class="status-badge" [ngClass]="tracking.status.toLowerCase()">
+          {{tracking.status}}
+        </span>
+      </div>
+
+      <div class="tracking-content">
+        <div class="tracking-info">
+          <p><strong>Fecha Inicio:</strong> {{tracking.startDate | date}}</p>
+          <p><strong>Fecha Fin:</strong> {{tracking.endDate | date}}</p>
+        </div>
+
+        <div class="tracking-objectives" *ngIf="tracking.completedObjectives">
+          <h4>Objetivos Completados:</h4>
+          <p>{{tracking.completedObjectives}}</p>
+        </div>
+
+        <div class="tracking-objectives" *ngIf="tracking.pendingObjectives">
+          <h4>Objetivos Pendientes:</h4>
+          <p>{{tracking.pendingObjectives}}</p>
+        </div>
+
+        <div class="tracking-activities">
+          <div class="activity-item">
+            <i class="fas fa-coffee" [class.active]="tracking.coffeeBreaks"></i>
+            <span>Pausas Café</span>
+          </div>
+          <div class="activity-item">
+            <i class="fas fa-code-branch" [class.active]="tracking.codeReviews"></i>
+            <span>Code Reviews</span>
+          </div>
+          <div class="activity-item">
+            <i class="fas fa-users" [class.active]="tracking.pairProgramming"></i>
+            <span>Pair Programming</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracking-actions">
+        <button 
+          (click)="onSendReport(tracking._id)"
+          [disabled]="tracking.reportSent"
+          class="send-report-btn">
+          {{ tracking.reportSent ? 'Reporte Enviado' : 'Enviar Reporte' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

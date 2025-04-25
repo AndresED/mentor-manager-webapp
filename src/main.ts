@@ -1,6 +1,31 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { provideRouter, Routes } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { AppComponent } from './app/app.component';
+import { importProvidersFrom } from '@angular/core';
+import { QuillModule } from 'ngx-quill';
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+// Importar estilos de Quill
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+
+const routes: Routes = [
+  { path: '', redirectTo: '/projects', pathMatch: 'full' },
+  {
+    path: 'projects',
+    loadChildren: () => import('./app/projects/projects.routes').then(m => m.PROJECTS_ROUTES)
+  },
+  {
+    path: 'trackings',
+    loadChildren: () => import('./app/tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+  }
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(),
+    importProvidersFrom(QuillModule.forRoot())
+  ]
+}).catch(err => console.error(err));
