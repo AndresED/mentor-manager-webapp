@@ -117,6 +117,66 @@ import { Tracking } from '../../../core/models/tracking.model';
             </select>
           </div>
           
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-4">Actividades</h3>
+            
+            <div class="space-y-4">
+              <!-- Coffee Breaks -->
+              <div>
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox"
+                    id="coffeeBreaks"
+                    formControlName="coffeeBreaks"
+                    class="mr-2">
+                  <label for="coffeeBreaks" class="text-gray-700">Coffee Breaks</label>
+                </div>
+                <textarea 
+                  *ngIf="trackingForm.get('coffeeBreaks')?.value"
+                  formControlName="notesCoffeeBreaks"
+                  rows="3"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Notas sobre coffee breaks..."></textarea>
+              </div>
+
+              <!-- Code Reviews -->
+              <div>
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox"
+                    id="codeReviews"
+                    formControlName="codeReviews"
+                    class="mr-2">
+                  <label for="codeReviews" class="text-gray-700">Code Reviews</label>
+                </div>
+                <textarea 
+                  *ngIf="trackingForm.get('codeReviews')?.value"
+                  formControlName="notesCodeReviews"
+                  rows="3"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Notas sobre code reviews..."></textarea>
+              </div>
+
+              <!-- Pair Programming -->
+              <div>
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox"
+                    id="pairProgramming"
+                    formControlName="pairProgramming"
+                    class="mr-2">
+                  <label for="pairProgramming" class="text-gray-700">Pair Programming</label>
+                </div>
+                <textarea 
+                  *ngIf="trackingForm.get('pairProgramming')?.value"
+                  formControlName="notesPairProgramming"
+                  rows="3"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Notas sobre pair programming..."></textarea>
+              </div>
+            </div>
+          </div>
+          
           <div class="flex justify-end">
             <button 
               type="submit"
@@ -151,7 +211,15 @@ export class TrackingFormComponent implements OnInit {
       description: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      status: ['En proceso', Validators.required]
+      status: ['En proceso', Validators.required],
+      coffeeBreaks: [false],
+      notesCoffeeBreaks: [''],
+      codeReviews: [false],
+      notesCodeReviews: [''],
+      pairProgramming: [false],
+      notesPairProgramming: [''],
+      weeklyMeetings: [false],
+      notesWeeklyMeetings: ['']
     });
   }
 
@@ -190,22 +258,31 @@ export class TrackingFormComponent implements OnInit {
       this.isSubmitting = true;
       this.errorMessage = '';
       
+      const formData = this.trackingForm.value;
+      
+      // Si no está marcado el checkbox, enviamos string vacío en las notas
+      if (!formData.coffeeBreaks) formData.notesCoffeeBreaks = '';
+      if (!formData.codeReviews) formData.notesCodeReviews = '';
+      if (!formData.pairProgramming) formData.notesPairProgramming = '';
+
       const newTracking: Omit<Tracking, '_id'> = {
         projectId: this.projectId,
-        name: this.trackingForm.value.name,
-        description: this.trackingForm.value.description,
-        startDate: new Date(this.trackingForm.value.startDate),
-        endDate: new Date(this.trackingForm.value.endDate),
-        status: this.trackingForm.value.status,
+        name: formData.name,
+        description: formData.description,
+        startDate: new Date(formData.startDate),
+        endDate: new Date(formData.endDate),
+        status: formData.status,
         developer: this.project.assignedDeveloper,
         reportSent: false,
         completedObjectives: '',
         pendingObjectives: '',
         observations: '',
         nextObjectives: '',
-        coffeeBreaks: false,
-        codeReviews: false,
-        pairProgramming: false
+        coffeeBreaks: formData.coffeeBreaks,
+        codeReviews: formData.codeReviews,
+        pairProgramming: formData.pairProgramming,
+        weeklyMeetings: formData.weeklyMeetings || false,
+        notesWeeklyMeetings: formData.weeklyMeetings ? formData.notesWeeklyMeetings : '',
       };
       
       this.trackingService.createTracking(newTracking).subscribe(

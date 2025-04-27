@@ -65,7 +65,12 @@ export class TrackingService {
           nextObjectives: '',
           coffeeBreaks: false,
           codeReviews: false,
-          pairProgramming: false
+          pairProgramming: false,
+          weeklyMeetings: false,
+          notesWeeklyMeetings: '',
+          notesCoffeeBreaks: '',
+          notesCodeReviews: '',
+          notesPairProgramming: ''
         } as Tracking);
       })
     );
@@ -103,7 +108,12 @@ export class TrackingService {
         coffeeBreaks: true,
         codeReviews: true,
         pairProgramming: false,
-        reportSent: true
+        reportSent: true,
+        weeklyMeetings: false,
+        notesWeeklyMeetings: '',
+        notesCoffeeBreaks: '',
+        notesCodeReviews: '',
+        notesPairProgramming: ''
       },
       {
         _id: '2',
@@ -121,7 +131,12 @@ export class TrackingService {
         coffeeBreaks: true,
         codeReviews: true,
         pairProgramming: true,
-        reportSent: true
+        reportSent: true,
+        weeklyMeetings: false,
+        notesWeeklyMeetings: '',
+        notesCoffeeBreaks: '',
+        notesCodeReviews: '',
+        notesPairProgramming: ''
       },
       {
         _id: '3',
@@ -139,7 +154,12 @@ export class TrackingService {
         coffeeBreaks: true,
         codeReviews: false,
         pairProgramming: false,
-        reportSent: false
+        reportSent: false,
+        weeklyMeetings: false,
+        notesWeeklyMeetings: '',
+        notesCoffeeBreaks: '',
+        notesCodeReviews: '',
+        notesPairProgramming: ''
       }
     ];
     

@@ -113,8 +113,47 @@ import { QuillModule } from 'ngx-quill';
               class="text-black w-full">
             </quill-editor>
           </div>
+        </div>
 
-          <div class="flex justify-end space-x-4 mt-6">
+        <div class="mt-8">
+          <h2 class="text-lg font-semibold text-white mb-6">Notas Adicionales</h2>
+          
+          <div class="mb-8">
+            <h3 class="text-white mb-2">Notas de Code Reviews</h3>
+            <quill-editor
+              [(ngModel)]="tracking.notesCodeReviews"
+              [modules]="quillModules"
+              (onContentChanged)="onContentChanged($event)"
+              class="w-full">
+            </quill-editor>
+          </div>
+
+          <div class="mb-8">
+            <h3 class="text-white mb-2">Notas de Pair Programming</h3>
+            <quill-editor
+              [(ngModel)]="tracking.notesPairProgramming"
+              [modules]="quillModules"
+              (onContentChanged)="onContentChanged($event)"
+              class="w-full">
+            </quill-editor>
+          </div>
+
+          <div class="mb-8">
+            <h3 class="text-white mb-2">Notas de Reuniones Semanales</h3>
+            <quill-editor
+              [(ngModel)]="tracking.notesWeeklyMeetings"
+              [modules]="quillModules"
+              (onContentChanged)="onContentChanged($event)"
+              class="w-full">
+            </quill-editor>
+          </div>
+
+          <div class="flex justify-end space-x-4 mt-8">
+            <button 
+              (click)="saveChanges()"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+              Guardar Cambios
+            </button>
             <button 
               *ngIf="tracking.status !== TrackingStatus.COMPLETED"
               (click)="completeTracking()"
@@ -276,7 +315,10 @@ export class TrackingDetailComponent implements OnInit {
         nextObjectives: this.tracking.nextObjectives,
         coffeeBreaks: this.tracking.coffeeBreaks,
         codeReviews: this.tracking.codeReviews,
-        pairProgramming: this.tracking.pairProgramming
+        pairProgramming: this.tracking.pairProgramming,
+        notesCodeReviews: this.tracking.notesCodeReviews,
+        notesPairProgramming: this.tracking.notesPairProgramming,
+        notesWeeklyMeetings: this.tracking.notesWeeklyMeetings
       };
       
       this.trackingService.updateTracking(this.trackingId, updates).subscribe({
@@ -295,8 +337,7 @@ export class TrackingDetailComponent implements OnInit {
   sendReport(): void {
     if (this.tracking) {
       this.trackingService.sendReport(this.trackingId).subscribe({
-        next: (updatedTracking) => {
-          this.tracking = { ...this.tracking, ...updatedTracking };
+        next: () => {
           alert('Reporte enviado correctamente');
         },
         error: (error) => {

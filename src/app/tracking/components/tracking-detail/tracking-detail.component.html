@@ -82,28 +82,58 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        <div class="flex items-center">
-          <input 
-            type="checkbox"
-            formControlName="coffeeBreaks"
-            class="mr-2">
-          <label class="text-sm text-gray-700">Pausas Café</label>
+        <div class="space-y-4">
+          <div class="form-group">
+            <div class="flex items-center mb-2">
+              <input 
+                type="checkbox"
+                formControlName="coffeeBreaks"
+                class="mr-2">
+              <label class="text-sm text-gray-700">Pausas Café</label>
+            </div>
+            <textarea 
+              *ngIf="trackingForm.get('coffeeBreaks')?.value"
+              formControlName="notesCoffeeBreaks"
+              rows="3"
+              class="w-full p-2 border rounded-lg"
+              placeholder="Notas sobre las pausas de café..."></textarea>
+          </div>
         </div>
 
-        <div class="flex items-center">
-          <input 
-            type="checkbox"
-            formControlName="codeReviews"
-            class="mr-2">
-          <label class="text-sm text-gray-700">Code Reviews</label>
+        <div class="space-y-4">
+          <div class="form-group">
+            <div class="flex items-center mb-2">
+              <input 
+                type="checkbox"
+                formControlName="codeReviews"
+                class="mr-2">
+              <label class="text-sm text-gray-700">Code Reviews</label>
+            </div>
+            <textarea 
+              *ngIf="trackingForm.get('codeReviews')?.value"
+              formControlName="notesCodeReviews"
+              rows="3"
+              class="w-full p-2 border rounded-lg"
+              placeholder="Notas sobre code reviews..."></textarea>
+          </div>
         </div>
 
-        <div class="flex items-center">
-          <input 
-            type="checkbox"
-            formControlName="pairProgramming"
-            class="mr-2">
-          <label class="text-sm text-gray-700">Pair Programming</label>
+        <div class="space-y-4">
+          <div class="form-group">
+            <div class="flex items-center mb-2">
+              <input 
+                type="checkbox"
+                formControlName="pairProgramming"
+                class="mr-2">
+              <label class="text-sm text-gray-700">Pair Programming</label>
+            </div>
+            <textarea 
+              *ngIf="trackingForm.get('pairProgramming')?.value"
+              formControlName="notesPairProgramming"
+              rows="3"
+              class="w-full p-2 border rounded-lg"
+              placeholder="Notas sobre pair programming..."></textarea>
+          </div>
         </div>
       </div>
     </div>

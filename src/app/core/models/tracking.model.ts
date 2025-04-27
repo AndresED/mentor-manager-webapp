@@ -18,7 +18,12 @@ export interface Tracking {
   observations: string;
   nextObjectives: string;
   coffeeBreaks: boolean;
+  notesCoffeeBreaks?: string;
   codeReviews: boolean;
+  notesCodeReviews?: string;
   pairProgramming: boolean;
+  notesPairProgramming?: string;
   reportSent: boolean;
+  weeklyMeetings: boolean;
+  notesWeeklyMeetings?: string;
 } 
