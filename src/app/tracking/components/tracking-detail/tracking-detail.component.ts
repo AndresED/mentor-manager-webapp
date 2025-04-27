@@ -6,6 +6,7 @@ import { TrackingService } from '../../../core/services/tracking.service';
 import { Tracking, TrackingStatus } from '../../../core/models/tracking.model';
 import { ProjectService } from '../../../core/services/project.service';
 import { QuillModule } from 'ngx-quill';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-tracking-detail',
@@ -266,7 +267,8 @@ export class TrackingDetailComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly trackingService: TrackingService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly toastService: ToastService
   ) {
     console.log('TrackingDetailComponent constructor');
   }
@@ -352,7 +354,7 @@ export class TrackingDetailComponent implements OnInit {
       this.trackingService.updateTracking(this.trackingId, updates).subscribe({
         next: (updatedTracking) => {
           console.log('Tracking updated successfully:', updatedTracking);
-          alert('Cambios guardados correctamente');
+          this.toastService.success('Cambios guardados correctamente');
           this.isSaving = false;
         },
         error: (error) => {
@@ -367,7 +369,7 @@ export class TrackingDetailComponent implements OnInit {
     if (this.tracking) {
       this.trackingService.sendReport(this.trackingId).subscribe({
         next: () => {
-          alert('Reporte enviado correctamente');
+          this.toastService.success('Reporte enviado correctamente');
         },
         error: (error) => {
           console.error('Error al enviar el reporte:', error);
@@ -382,7 +384,7 @@ export class TrackingDetailComponent implements OnInit {
       this.trackingService.updateTracking(this.trackingId, updates).subscribe({
         next: (updatedTracking) => {
           this.tracking = { ...this.tracking, ...updatedTracking };
-          alert('Seguimiento marcado como completado');
+          this.toastService.success('Seguimiento marcado como completado');
         },
         error: (error) => {
           console.error('Error al actualizar el seguimiento:', error);

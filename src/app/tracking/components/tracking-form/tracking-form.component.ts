@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TrackingService } from '../../../core/services/tracking.service';
 import { ProjectService } from '../../../core/services/project.service';
 import { Tracking } from '../../../core/models/tracking.model';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-tracking-form',
@@ -204,7 +205,8 @@ export class TrackingFormComponent implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly trackingService: TrackingService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly toastService: ToastService
   ) {
     this.trackingForm = this.fb.group({
       name: ['', Validators.required],
@@ -288,11 +290,10 @@ export class TrackingFormComponent implements OnInit {
       
       this.trackingService.createTracking(newTracking).subscribe(
         (createdTracking) => {
-          console.log('Seguimiento creado:', createdTracking);
           this.isSubmitting = false;
           
           // Mostrar mensaje de éxito
-          alert('Seguimiento creado correctamente');
+          this.toastService.success('Seguimiento creado correctamente');
           
           // Redirigir al detalle del proyecto
           this.router.navigate(['/projects', this.projectId]);

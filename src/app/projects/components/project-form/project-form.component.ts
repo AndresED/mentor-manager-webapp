@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../../core/services/project.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-project-form',
@@ -106,9 +107,10 @@ export class ProjectFormComponent implements OnInit {
   errorMessage = '';
   
   constructor(
-    private fb: FormBuilder, 
-    private router: Router,
-    private projectService: ProjectService
+    private readonly fb: FormBuilder, 
+    private readonly router: Router,
+    private readonly projectService: ProjectService,
+    private readonly toastService: ToastService
   ) {
     this.projectForm = this.fb.group({
       name: ['', Validators.required],
@@ -138,7 +140,8 @@ export class ProjectFormComponent implements OnInit {
           this.isSubmitting = false;
           
           // Mostrar mensaje de éxito
-          alert('Proyecto creado correctamente');
+          this.toastService.success('Proyecto creado correctamente');
+
           
           // Redirigir a la lista de proyectos
           this.router.navigate(['/projects']);

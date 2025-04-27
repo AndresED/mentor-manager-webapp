@@ -1,7 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+// Importar estilos de toastr
+@import 'ngx-toastr/toastr';
 /* Estilos globales adicionales */
 html, body {
   height: 100%;
@@ -17,3 +18,48 @@ body {
 * {
   box-sizing: border-box;
 } 
+// Personalizar toasts
+.toast-container {
+  .ngx-toastr {
+    background-color: white;
+    color: #1a1a1a;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    .toast-title {
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    
+    .toast-message {
+      color: #4b5563;
+    }
+
+    &.toast-success {
+      border-left: 4px solid #10B981;
+    }
+
+    &.toast-error {
+      border-left: 4px solid #EF4444;
+    }
+
+    &.toast-warning {
+      border-left: 4px solid #F59E0B;
+    }
+
+    &.toast-info {
+      border-left: 4px solid #3B82F6;
+    }
+
+    .toast-close-button {
+      color: #4b5563;
+      opacity: 0.7;
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .toast-progress {
+      opacity: 0.7;
+    }
+  }
+}

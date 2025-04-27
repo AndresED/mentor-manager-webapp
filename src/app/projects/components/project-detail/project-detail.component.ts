@@ -6,6 +6,7 @@ import { ProjectService, Project } from '../../../core/services/project.service'
 import { TrackingService } from '../../../core/services/tracking.service';
 import { Tracking, TrackingStatus } from '../../../core/models/tracking.model';
 import { ProjectStatus } from '../../../core/models/project.model';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -134,6 +135,7 @@ export class ProjectDetailComponent implements OnInit {
   TrackingStatus = TrackingStatus;
   
   constructor(
+    private readonly toastService: ToastService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly projectService: ProjectService,
@@ -184,10 +186,10 @@ export class ProjectDetailComponent implements OnInit {
       this.projectService.updateProject(this.projectId, updatedProject).subscribe({
         next: (project) => {
           this.project = project;
-          alert('Estado del proyecto actualizado correctamente');
+          this.toastService.success('Estado del proyecto actualizado correctamente');
         },
         error: (error) => {
-          console.error('Error al actualizar el estado:', error);
+          this.toastService.error('Error al actualizar el estado:', error);
         }
       });
     }

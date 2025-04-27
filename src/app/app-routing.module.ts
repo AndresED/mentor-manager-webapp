@@ -1,26 +1,45 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+import { PublicGuard } from './core/guards/public.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/projects', pathMatch: 'full' },
   {
-    path: 'projects',
-    loadChildren: () => import('./projects/projects.routes').then(m => m.PROJECTS_ROUTES)
+    path: 'login',
+    canActivate: [PublicGuard],
+    loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'trackings',
-    loadChildren: () => import('./tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+    path: '',
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
+      },
+      {
+        path: 'projects',
+        loadChildren: () => import('./projects/projects.routes').then(m => m.PROJECTS_ROUTES)
+      },
+      {
+        path: 'trackings',
+        loadChildren: () => import('./tracking/tracking.routes').then(m => m.TRACKING_ROUTES)
+      },
+      {
+        path: '',
+        redirectTo: 'projects',
+        pathMatch: 'full'
+      }
+    ]
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
+    path: '**',
+    redirectTo: ''
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    enableTracing: true // <-- Habilitar esto para depuración
-  })],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { } 

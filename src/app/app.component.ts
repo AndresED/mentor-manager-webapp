@@ -1,55 +1,81 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
+import { LoaderComponent } from './shared/components/loader/loader.component';
+import { LoaderService } from './core/services/loader.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, LoaderComponent],
   template: `
-    <div class="flex h-screen bg-[#0B0F19]">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-[#0B0F19] text-gray-100 p-4 border-r border-gray-800">
-        <div class="flex items-center mb-8">
-          <span class="text-2xl font-bold text-white">Dashdark X</span>
-        </div>
+    <ng-container *ngIf="loaderService.loading$ | async">
+      <app-loader></app-loader>
+    </ng-container>
 
-        <!-- Navigation -->
-        <nav class="space-y-2">
-          <a routerLink="/dashboard" 
-             routerLinkActive="bg-[#131B2C] text-blue-400" 
-             class="flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
-            <i class="fas fa-home mr-3"></i>
-            <span>Dashboard</span>
-          </a>
-          <a routerLink="/projects" 
-             routerLinkActive="bg-[#131B2C] text-blue-400" 
-             class="flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
-            <i class="fas fa-project-diagram mr-3"></i>
-            <span>Projects</span>
-          </a>
-          <a routerLink="/recipients" 
-             routerLinkActive="bg-blue-600"
-             class="flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
-            <i class="fas fa-users mr-3"></i>
-            Recipients
-          </a>
-        </nav>
-      </aside>
+    <ng-container *ngIf="authService.isAuthenticated(); else loginLayout">
+      <div class="flex h-screen bg-[#0B0F19]">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[#0B0F19] text-gray-100 flex flex-col border-r border-gray-800">
+          <!-- Header -->
+          <div class="p-4 border-b border-gray-800 flex items-center gap-3">
+            <img src="assets/images/logo.png" alt="Logo" class="w-8 h-8"/>
+            <span class="text-xl font-bold text-white">DevTrack Pro</span>
+          </div>
 
-      <!-- Main Content -->
-      <main class="flex-1 bg-[#0B0F19] p-8 overflow-auto">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      height: 100vh;
-    }
-  `]
+          <!-- Navigation -->
+          <nav class="flex-1 p-4 space-y-2">
+            <a routerLink="/dashboard" 
+               routerLinkActive="bg-[#131B2C] text-blue-400" 
+               class="flex items-center px-4 py-2.5 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
+              <i class="fas fa-home mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+            <a routerLink="/projects" 
+               routerLinkActive="bg-[#131B2C] text-blue-400" 
+               class="flex items-center px-4 py-2.5 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
+              <i class="fas fa-project-diagram mr-3"></i>
+              <span>Projects</span>
+            </a>
+            <a routerLink="/recipients" 
+               routerLinkActive="bg-[#131B2C] text-blue-400"
+               class="flex items-center px-4 py-2.5 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-white transition-colors">
+              <i class="fas fa-users mr-3"></i>
+              <span>Recipients</span>
+            </a>
+          </nav>
+
+          <!-- Footer with Logout -->
+          <div class="p-4 border-t border-gray-800">
+            <button 
+              (click)="logout()" 
+              class="flex items-center w-full px-4 py-2.5 text-gray-100 rounded-lg hover:bg-[#131B2C] hover:text-red-400 transition-colors">
+              <i class="fas fa-sign-out-alt mr-3"></i>
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 bg-[#0B0F19] p-8 overflow-auto">
+          <router-outlet></router-outlet>
+        </main>
+      </div>
+    </ng-container>
+
+    <ng-template #loginLayout>
+      <router-outlet></router-outlet>
+    </ng-template>
+  `
 })
 export class AppComponent {
-  title = 'webapp';
+  constructor(
+    public authService: AuthService,
+    public loaderService: LoaderService
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+  }
 }
