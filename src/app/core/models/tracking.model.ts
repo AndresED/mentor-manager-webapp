@@ -26,4 +26,5 @@ export interface Tracking {
   reportSent: boolean;
   weeklyMeetings: boolean;
   notesWeeklyMeetings?: string;
+  incidents: string;
 } 

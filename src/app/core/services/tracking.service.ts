@@ -113,7 +113,8 @@ export class TrackingService {
         notesWeeklyMeetings: '',
         notesCoffeeBreaks: '',
         notesCodeReviews: '',
-        notesPairProgramming: ''
+        notesPairProgramming: '',
+        incidents: ''
       },
       {
         _id: '2',
@@ -136,7 +137,8 @@ export class TrackingService {
         notesWeeklyMeetings: '',
         notesCoffeeBreaks: '',
         notesCodeReviews: '',
-        notesPairProgramming: ''
+        notesPairProgramming: '',
+        incidents: ''
       },
       {
         _id: '3',
@@ -159,7 +161,8 @@ export class TrackingService {
         notesWeeklyMeetings: '',
         notesCoffeeBreaks: '',
         notesCodeReviews: '',
-        notesPairProgramming: ''
+        notesPairProgramming: '',
+        incidents: ''
       }
     ];
     

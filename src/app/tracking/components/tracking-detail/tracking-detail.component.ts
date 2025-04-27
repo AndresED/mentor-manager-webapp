@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TrackingService } from '../../../core/services/tracking.service';
 import { Tracking, TrackingStatus } from '../../../core/models/tracking.model';
 import { ProjectService } from '../../../core/services/project.service';
@@ -10,7 +10,13 @@ import { QuillModule } from 'ngx-quill';
 @Component({
   selector: 'app-tracking-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, QuillModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule,
+    ReactiveFormsModule,
+    QuillModule
+  ],
   template: `
     <div class="container mx-auto p-4" *ngIf="tracking">
       <div class="bg-[#131B2C] rounded-lg p-6">
@@ -113,11 +119,33 @@ import { QuillModule } from 'ngx-quill';
               class="text-black w-full">
             </quill-editor>
           </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-white">Incidentes</h3>
+            <quill-editor
+              [(ngModel)]="tracking.incidents"
+              [styles]="{height: '200px', backgroundColor: 'white', width: '100%'}"
+              [modules]="quillModules"
+              class="text-black w-full">
+            </quill-editor>
+          </div>
         </div>
 
         <div class="mt-8">
           <h2 class="text-lg font-semibold text-white mb-6">Notas Adicionales</h2>
-          
+          <div class="space-y-4">
+          <div class="form-group">
+            <h3 class="text-white mb-2">Cafecitos</h3>
+            <quill-editor
+              [(ngModel)]="tracking.notesCoffeeBreaks"
+              [modules]="quillModules"
+              (onContentChanged)="onContentChanged($event)"
+              rows="3"
+              class="w-full p-2 border rounded-lg"
+              placeholder="Notas sobre las pausas de café..."> </quill-editor>
+          </div>
+        </div>
+
           <div class="mb-8">
             <h3 class="text-white mb-2">Notas de Code Reviews</h3>
             <quill-editor
@@ -155,13 +183,11 @@ import { QuillModule } from 'ngx-quill';
               Guardar Cambios
             </button>
             <button 
-              *ngIf="tracking.status !== TrackingStatus.COMPLETED"
               (click)="completeTracking()"
               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
               Finalizar
             </button>
             <button 
-              *ngIf="!tracking.reportSent"
               (click)="sendReport()"
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
               Enviar Reporte
@@ -318,12 +344,15 @@ export class TrackingDetailComponent implements OnInit {
         pairProgramming: this.tracking.pairProgramming,
         notesCodeReviews: this.tracking.notesCodeReviews,
         notesPairProgramming: this.tracking.notesPairProgramming,
-        notesWeeklyMeetings: this.tracking.notesWeeklyMeetings
+        notesWeeklyMeetings: this.tracking.notesWeeklyMeetings,
+        notesCoffeeBreaks: this.tracking.notesCoffeeBreaks,
+        incidents: this.tracking.incidents
       };
       
       this.trackingService.updateTracking(this.trackingId, updates).subscribe({
         next: (updatedTracking) => {
           console.log('Tracking updated successfully:', updatedTracking);
+          alert('Cambios guardados correctamente');
           this.isSaving = false;
         },
         error: (error) => {

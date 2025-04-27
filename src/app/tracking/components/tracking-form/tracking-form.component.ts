@@ -283,6 +283,7 @@ export class TrackingFormComponent implements OnInit {
         pairProgramming: formData.pairProgramming,
         weeklyMeetings: formData.weeklyMeetings || false,
         notesWeeklyMeetings: formData.weeklyMeetings ? formData.notesWeeklyMeetings : '',
+        incidents: '',
       };
       
       this.trackingService.createTracking(newTracking).subscribe(
