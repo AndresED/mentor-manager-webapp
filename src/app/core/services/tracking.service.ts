@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import { Tracking, TrackingStatus } from '../models/tracking.model';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrackingService {
-  private readonly apiUrl = environment.apiUrl ? `${environment.apiUrl}/trackings` : 'http://localhost:3000/api/trackings';
+  private readonly path = 'trackings';
   
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly apiService: ApiService) {}
   
   getTrackings(projectId?: string): Observable<Tracking[]> {
-    let url = this.apiUrl;
+    let params = new HttpParams();
     if (projectId) {
-      url += `?projectId=${projectId}`;
+      params = params.set('projectId', projectId);
     }
-    return this.http.get<Tracking[]>(url).pipe(
+    
+    return this.apiService.get<Tracking[]>(this.path, params).pipe(
       catchError(error => {
         console.error('Error fetching trackings:', error);
         return this.simulateTrackingsForProject(projectId || '1');
@@ -27,25 +28,25 @@ export class TrackingService {
   }
   
   getTrackingById(id: string): Observable<Tracking> {
-    return this.http.get<Tracking>(`${this.apiUrl}/${id}`).pipe(
+    return this.apiService.get<Tracking>(`${this.path}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
   
   createTracking(tracking: Omit<Tracking, '_id'>): Observable<Tracking> {
-    return this.http.post<Tracking>(this.apiUrl, tracking).pipe(
+    return this.apiService.post<Tracking, Omit<Tracking, '_id'>>(this.path, tracking).pipe(
       catchError(this.handleError)
     );
   }
   
   updateTracking(id: string, updates: Partial<Tracking>): Observable<Tracking> {
-    return this.http.put<Tracking>(`${this.apiUrl}/${id}`, updates).pipe(
+    return this.apiService.put<Tracking, Partial<Tracking>>(`${this.path}/${id}`, updates).pipe(
       catchError(this.handleError)
     );
   }
   
   sendReport(id: string): Observable<Tracking> {
-    return this.http.post<Tracking>(`${this.apiUrl}/${id}/send-report`, {}).pipe(
+    return this.apiService.post<Tracking, {}>(`${this.path}/${id}/send-report`, {}).pipe(
       catchError(error => {
         console.error('Error sending report:', error);
         // Simular envío exitoso
@@ -169,11 +170,11 @@ export class TrackingService {
     return of(mockTrackings);
   }
 
-  getDashboardStats() {
-    return this.http.get<any>(`${this.apiUrl}/dashboard/stats`);
+  getDashboardStats(): Observable<any> {
+    return this.apiService.get<any>(`${this.path}/dashboard/stats`);
   }
 
-  getUpcomingTrackings() {
-    return this.http.get<any>(`${this.apiUrl}/dashboard/upcoming`);
+  getUpcomingTrackings(): Observable<any> {
+    return this.apiService.get<any>(`${this.path}/dashboard/upcoming`);
   }
 } 

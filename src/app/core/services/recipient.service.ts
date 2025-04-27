@@ -1,26 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { Recipient } from '../models/recipient.model';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipientService {
-  private apiUrl = `${environment.apiUrl}/recipients`;
+  private readonly path = 'recipients';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly apiService: ApiService) {}
 
   getRecipients(): Observable<Recipient[]> {
-    return this.http.get<Recipient[]>(this.apiUrl);
+    return this.apiService.get<Recipient[]>(this.path);
   }
 
   getRecipient(id: string): Observable<Recipient> {
-    return this.http.get<Recipient>(`${this.apiUrl}/${id}`);
+    return this.apiService.get<Recipient>(`${this.path}/${id}`);
   }
 
-  createRecipient(data: any): Observable<any> {
+  createRecipient(data: any): Observable<Recipient> {
     // Forzar la estructura exacta del objeto antes de enviarlo
     const recipient = {
       name: data.name,
@@ -29,14 +28,14 @@ export class RecipientService {
       projects: data.projects
     };
     
-    return this.http.post<any>(this.apiUrl, recipient);
+    return this.apiService.post<Recipient, typeof recipient>(this.path, recipient);
   }
 
   updateRecipient(id: string, recipient: Partial<Recipient>): Observable<Recipient> {
-    return this.http.put<Recipient>(`${this.apiUrl}/${id}`, recipient);
+    return this.apiService.put<Recipient, Partial<Recipient>>(`${this.path}/${id}`, recipient);
   }
 
   deleteRecipient(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.apiService.delete<void>(`${this.path}/${id}`);
   }
 } 

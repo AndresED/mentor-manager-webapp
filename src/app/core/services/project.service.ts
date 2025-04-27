@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { catchError, tap } from 'rxjs/operators';
+import { ApiService } from './api.service';
 
 export interface Project {
   _id: string;
@@ -12,23 +12,14 @@ export interface Project {
   assignedDeveloper: string;
 }
 
-interface ApiProject {
-  _id: string;
-  name: string;
-  description: string;
-  status: string;
-  assignedDeveloper: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-  private readonly apiUrl = environment.apiUrl ? `${environment.apiUrl}/projects` : 'http://localhost:3000/api/projects';
   private readonly projectsSubject = new BehaviorSubject<Project[]>([]);
+  private readonly path = 'projects';
   
-  constructor(private readonly http: HttpClient) {
-    // Cargar proyectos iniciales
+  constructor(private readonly apiService: ApiService) {
     this.refreshProjects();
   }
   
@@ -40,14 +31,7 @@ export class ProjectService {
   }
   
   private getProjectsFromApi(): Observable<Project[]> {
-    return this.http.get<ApiProject[]>(this.apiUrl).pipe(
-      map(projects => projects.map(project => ({
-        _id: project._id,
-        name: project.name,
-        description: project.description,
-        status: project.status as 'Activo' | 'Finalizado' | 'Parado' | 'Soporte',
-        assignedDeveloper: project.assignedDeveloper
-      }))),
+    return this.apiService.get<Project[]>(this.path).pipe(
       catchError(error => {
         console.error('Error fetching projects:', error);
         return this.simulateData();
@@ -60,16 +44,15 @@ export class ProjectService {
   }
   
   getProjectById(id: string): Observable<Project> {
-    return this.http.get<Project>(`${this.apiUrl}/${id}`).pipe(
+    return this.apiService.get<Project>(`${this.path}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
   
   createProject(project: Omit<Project, '_id'>): Observable<Project> {
-    return this.http.post<Project>(this.apiUrl, project).pipe(
+    return this.apiService.post<Project, Omit<Project, '_id'>>(this.path, project).pipe(
       catchError(error => {
         console.error('Error creating project:', error);
-        // Simular creación exitosa
         const newProject: Project = {
           _id: Math.random().toString(36).substr(2, 9),
           ...project
@@ -80,7 +63,7 @@ export class ProjectService {
   }
   
   updateProject(id: string, updates: Partial<Project>): Observable<Project> {
-    return this.http.put<Project>(`${this.apiUrl}/${id}`, updates).pipe(
+    return this.apiService.put<Project, Partial<Project>>(`${this.path}/${id}`, updates).pipe(
       tap(updatedProject => {
         const currentProjects = this.projectsSubject.value;
         const index = currentProjects.findIndex(p => p._id === id);
@@ -94,7 +77,7 @@ export class ProjectService {
   }
   
   deleteProject(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    return this.apiService.delete<void>(`${this.path}/${id}`).pipe(
       tap(() => {
         const currentProjects = this.projectsSubject.value;
         this.projectsSubject.next(currentProjects.filter(p => p._id !== id));
@@ -155,11 +138,11 @@ export class ProjectService {
     return of(mockProjects);
   }
 
-  getProjectsStatus() {
-    return this.http.get<any>(`${this.apiUrl}/projects/status`);
+  getProjectsStatus(): Observable<any> {
+    return this.apiService.get<any>(`${this.path}/status`);
   }
 
-  getRecentActivity() {
-    return this.http.get<any>(`${this.apiUrl}/projects/activity`);
+  getRecentActivity(): Observable<any> {
+    return this.apiService.get<any>(`${this.path}/activity`);
   }
 } 
